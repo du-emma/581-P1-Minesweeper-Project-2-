@@ -6,7 +6,7 @@ Outside Sources: Claude
 Description: Main AI controller for Minesweeper. The AISolver class is used for all three difficulty levels.
              It finds the cells that the AI can act on, which are covered and unflagged, sends the turn to the
              solver for the selected difficulty, and falls back to a random move when Medium/Hard rules have nothing
-             to do.
+             to do. Also, it can find all the uncovered cells.
 """
 
 from . import easy_ai
@@ -27,6 +27,14 @@ class AISolver:
             if cell.is_covered and not cell.is_flagged:
                 available.append((row, col))
         return available
+
+    def get_uncovered_cells(self):
+        """return every (row, col) that is uncovered"""
+        uncovered = []
+        for row, col, cell in self.board.iter_cells():
+            if not cell.is_covered:
+                uncovered.append((row, col))
+        return uncovered
     
     def make_move(self):
         """return AI's next move for current difficulty"""
@@ -49,8 +57,9 @@ class AISolver:
                 from .medium_ai import find_move
         except ModuleNotFoundError:
             return None
-        return find_move(self.board)
+        return find_move(self.board, self.get_uncovered_cells())
     
     getAvailableCells = get_available_cells
+    getUncoveredCells = get_uncovered_cells
     makeMove = make_move
     randomMove = random_move
