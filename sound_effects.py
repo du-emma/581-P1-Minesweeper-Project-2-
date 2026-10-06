@@ -50,13 +50,19 @@ class SoundEffects:
         self.enabled = enabled and _PYGAME_AVAILABLE
         self._clips: dict[str, "pygame.mixer.Sound | None"] = {}
 
-        if self.enabled:
+        if enabled and not _PYGAME_AVAILABLE:
+            print(
+                "[sound_effects] pygame is not installed, so sound effects "
+                "are disabled. Run: pip install -r requirements.txt",
+            )
+        elif self.enabled:
             try:
                 pygame.mixer.init()
-            except pygame.error:
+            except pygame.error as exc:
                 # No audio device available (e.g. headless CI) -- disable
-                # rather than crash the game.
+                # rather than crash the game, but say why.
                 self.enabled = False
+                print(f"[sound_effects] audio device unavailable, sound effects disabled: {exc}")
 
     def _load(self, filename: str):
         """Return the cached Sound for ``filename``, loading it on first use."""
@@ -68,8 +74,10 @@ class SoundEffects:
         if os.path.isfile(path):
             try:
                 sound = pygame.mixer.Sound(path)
-            except pygame.error:
-                sound = None
+            except pygame.error as exc:
+                print(f"[sound_effects] could not load {path}: {exc}")
+        else:
+            print(f"[sound_effects] clip not found, skipping: {path}")
         self._clips[filename] = sound
         return sound
 
