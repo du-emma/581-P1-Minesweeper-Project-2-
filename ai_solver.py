@@ -9,7 +9,7 @@ Description: Main AI controller for Minesweeper. The AISolver class is used for 
              to do. Also, it can find all the uncovered cells.
 """
 
-from . import easy_ai
+import easy_ai
 
 class AISolver:
     """chooses the AI's next move based on selected difficulty"""
@@ -52,9 +52,9 @@ class AISolver:
         """asks medium/hard module for a move"""
         try:
             if self.difficulty == "hard":
-                from .hard_ai import find_move
+                from hard_ai import find_move
             else:
-                from .medium_ai import find_move
+                from medium_ai import find_move
         except ModuleNotFoundError:
             return None
         return find_move(self.board, self.get_uncovered_cells())

@@ -5,7 +5,7 @@ Module: display.py
 Outside sources: Claude Code
 Description: Terminal rendering for Minesweeper. Prints the 10x10 grid with
     column labels A-J and row numbers 1-10, the remaining mine count, the game
-    status, the action menu, and feedback messages.
+    status, the action and AI setup menus, and feedback messages.
 Inputs: None.
 Outputs: it READS board state and never modifies it.
 
@@ -63,6 +63,22 @@ def render_menu() -> None:
     print("  2. Flag")
     print("  3. Unflag")
     print("  4. Quit")
+
+
+def render_ai_menu() -> None:
+    """Print the ways the AI can take part in the game."""
+    print("\nHow should the AI play?")
+    print("  1. Off (you play alone)")
+    print("  2. Interactive (you and the AI take turns)")
+    print("  3. Auto (the AI solves the board on its own)")
+
+
+def render_difficulty_menu() -> None:
+    """Print the AI difficulty choices."""
+    print("\nHow smart should the AI be?")
+    print("  1. Easy (uncovers cells at random)")
+    print("  2. Medium (basic flag and open rules)")
+    print("  3. Hard (medium rules plus the 1-2-1 pattern)")
 
 
 def render_message(message: str) -> None:

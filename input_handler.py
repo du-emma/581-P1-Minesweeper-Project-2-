@@ -12,7 +12,7 @@ This module only parses input.
 from typing import Optional
 
 from board import COLUMN_LETTERS
-from display import render_menu
+from display import render_ai_menu, render_difficulty_menu, render_menu
 
 MIN_MINES = 10
 MAX_MINES = 20
@@ -27,6 +27,19 @@ ACTION_ALIASES = {
 }
 
 BACK_WORDS = {"b", "back"}
+
+# How the AI takes part, and how much reasoning it uses.
+AI_MODE_ALIASES = {
+    "1": "off", "off": "off", "o": "off", "none": "off",
+    "2": "interactive", "interactive": "interactive", "i": "interactive",
+    "3": "auto", "auto": "auto", "a": "auto",
+}
+
+AI_DIFFICULTY_ALIASES = {
+    "1": "easy", "easy": "easy", "e": "easy",
+    "2": "medium", "medium": "medium", "m": "medium",
+    "3": "hard", "hard": "hard", "h": "hard",
+}
 
 
 def _read(prompt: str) -> Optional[str]:
@@ -65,6 +78,16 @@ def parse_action(text: str) -> Optional[str]:
     return ACTION_ALIASES.get(text.strip().lower())
 
 
+def parse_ai_mode(text: str) -> Optional[str]:
+    """Map menu input to "off", "interactive", or "auto"."""
+    return AI_MODE_ALIASES.get(text.strip().lower())
+
+
+def parse_difficulty(text: str) -> Optional[str]:
+    """Map menu input to "easy", "medium", or "hard"."""
+    return AI_DIFFICULTY_ALIASES.get(text.strip().lower())
+
+
 def get_mine_count() -> Optional[int]:
     """Prompt until the player picks a mine count from 10 to 20."""
     while True:
@@ -75,6 +98,32 @@ def get_mine_count() -> Optional[int]:
         if raw.isdigit() and MIN_MINES <= int(raw) <= MAX_MINES:
             return int(raw)
         print(f"Please enter a whole number from {MIN_MINES} to {MAX_MINES}.")
+
+
+def _choose(render_options, parser) -> Optional[str]:
+    """Show a three-option menu and prompt until one of them is chosen.
+
+    Returns None on Ctrl+C / Ctrl+D so the caller can exit cleanly.
+    """
+    render_options()
+    while True:
+        raw = _read("Choose 1-3: ")
+        if raw is None:
+            return None
+        choice = parser(raw)
+        if choice:
+            return choice
+        print("Invalid choice. Enter 1, 2, or 3.")
+
+
+def get_ai_mode() -> Optional[str]:
+    """Prompt until the player picks how the AI takes part."""
+    return _choose(render_ai_menu, parse_ai_mode)
+
+
+def get_ai_difficulty() -> Optional[str]:
+    """Prompt until the player picks how much the AI reasons."""
+    return _choose(render_difficulty_menu, parse_difficulty)
 
 
 def _get_action() -> str:
