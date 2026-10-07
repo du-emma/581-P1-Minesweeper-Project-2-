@@ -3,7 +3,12 @@
 # Running the program
 Minesweeper uses the command line interface, and must be ran on a machine that has python downloaded.
 
-Use the command:
+Before running for the first time, install the dependencies (pygame, used for sound effects):
+  py -m pip install -r requirements.txt
+
+Use `py -m pip` rather than plain `pip` so pygame installs into the same Python that `py` runs. Without pygame the game still works, just with no sound.
+
+Then run the game with the command:
   py index.py
   
 The program will then ask you how many mines you would like to start with, and the game begins.
